@@ -25,7 +25,7 @@ export const createOferta = asyncWrapper(async (req: AuthRequest, res: Response)
   }
 
   const isAdmin = req.user.roles.includes('ADMIN');
-  const ownerToSave = (isAdmin && req.body.owner) ? req.body.owner : req.user.id;
+  const ownerToSave = isAdmin && req.body.owner ? req.body.owner : req.user.id;
 
   const nuevaOferta = await ofertaService.crearOferta({
     ...req.body,
@@ -34,13 +34,10 @@ export const createOferta = asyncWrapper(async (req: AuthRequest, res: Response)
   res.status(201).json(nuevaOferta);
 });
 
-export const updateOferta = asyncWrapper(async (
-  req: Request<{ id: string }, {}, Partial<IOferta>>,
-  res: Response
-) => {
+export const updateOferta = asyncWrapper(async (req: Request<{ id: string }, {}, Partial<IOferta>>, res: Response) => {
   const authReq = req as unknown as AuthRequest;
   const isAdmin = authReq.user?.roles?.includes('ADMIN');
-  let dataToUpdate = { ...req.body } as any;
+  const dataToUpdate = { ...req.body } as any;
 
   if (!isAdmin) {
     delete dataToUpdate.owner;

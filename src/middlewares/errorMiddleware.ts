@@ -7,27 +7,19 @@ export interface ApiErrorResponse {
   statusCode: number;
   errorCode: string;
   message: string;
-  details?: { field?: string; message: string; }[];
+  details?: { field?: string; message: string }[];
   timestamp: string;
 }
 
-export const globalErrorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction): void => {
   let errorToHandle = err;
 
   // Interceptar errores específicos de Mongoose / MongoDB
   if (err.name === 'MongoServerError' && err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
-    errorToHandle = new AppError(
-      409,
-      'CONFLICT',
-      `Ya existe un registro con ese ${field}. Por favor, utiliza otro.`,
-      [{ field, message: 'Dato duplicado' }]
-    );
+    errorToHandle = new AppError(409, 'CONFLICT', `Ya existe un registro con ese ${field}. Por favor, utiliza otro.`, [
+      { field, message: 'Dato duplicado' }
+    ]);
   }
 
   // Configuro respuesta estándar estrictamente tipada
@@ -43,9 +35,9 @@ export const globalErrorHandler = (
   // Manejo de errores controlados (Operacionales)
   if (errorToHandle instanceof AppError && errorToHandle.isOperational) {
     if (errorToHandle.statusCode >= 500) {
-       logger.error(errorToHandle, 'AppError (Operational 500)');
+      logger.error(errorToHandle, 'AppError (Operational 500)');
     } else {
-       logger.warn(`[${errorToHandle.errorCode}] ${errorToHandle.message}`);
+      logger.warn(`[${errorToHandle.errorCode}] ${errorToHandle.message}`);
     }
   } else {
     // Error NO controlado. Bug de programación interno o librerías que petan

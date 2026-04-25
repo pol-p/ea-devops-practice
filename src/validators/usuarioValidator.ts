@@ -34,9 +34,7 @@ const publicRolesSchema = z
     message: 'No se permiten roles duplicados'
   });
 
-export const createUsuarioPublicSchema = usuarioBaseSchema
-  .extend({ roles: publicRolesSchema })
-  .strict();
+export const createUsuarioPublicSchema = usuarioBaseSchema.extend({ roles: publicRolesSchema }).strict();
 
 export const updateUsuarioSchema = usuarioBaseSchema
   .partial()

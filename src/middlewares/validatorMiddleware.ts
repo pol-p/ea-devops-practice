@@ -10,10 +10,11 @@ type ValidationSchemas = {
 };
 
 /**
- * GENERIC VALIDATOR: 
+ * GENERIC VALIDATOR:
  * Valida de forma opcional body, params y query.
  */
-export const validate = (schemas: ValidationSchemas) =>
+export const validate =
+  (schemas: ValidationSchemas) =>
   (req: Request, res: Response, next: NextFunction): void => {
     try {
       if (schemas.body) {
@@ -32,8 +33,8 @@ export const validate = (schemas: ValidationSchemas) =>
     } catch (error) {
       if (error instanceof ZodError) {
         logger.warn('Validation error on %s %s', req.method, req.url);
-        
-        const details = error.issues.map(err => ({
+
+        const details = error.issues.map((err) => ({
           field: err.path.join('.'),
           message: err.message
         }));
