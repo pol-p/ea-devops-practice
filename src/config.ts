@@ -12,6 +12,7 @@ export const apiPort = process.env.PORT || 4000;
 export const config = {
     mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ea-exercise-mongoose',
     logLevel: process.env.LOG_LEVEL || 'info',
+    saltRounds: process.env.NODE_ENV === 'test' ? 1 : 12,
     jwt: {
         accessSecret: process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || "LlaveSecretaDefault",
         refreshSecret: process.env.JWT_REFRESH_SECRET || "LlaveRefreshDefault",
