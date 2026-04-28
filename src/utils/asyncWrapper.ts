@@ -4,8 +4,8 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
  * Wraps async Express controllers to automatically catch exceptions
  * and forward them to the global Express error-handling middleware.
  */
-export const asyncWrapper = (fn: Function): RequestHandler => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+export const asyncWrapper = (fn: any): RequestHandler<any, any, any, any> => {
+  return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 };

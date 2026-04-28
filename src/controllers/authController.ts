@@ -6,7 +6,7 @@ import { UsuarioModel } from '../models/usuarioModel.js';
 import { asyncWrapper } from '../utils/asyncWrapper.js';
 import { UnauthorizedError, NotFoundError } from '../utils/AppError.js';
 
-export const login = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const login = asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
   const { email, password } = req.body;
 
   const usuario = await authService.validateUserCredentials(email, password);
@@ -34,7 +34,7 @@ export const login = asyncWrapper(async (req: Request, res: Response, next: Next
   });
 });
 
-export const refreshToken = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const refreshToken = asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
   const incomingRefreshToken = req.cookies?.[config.cookies.refreshName] || req.body?.refreshToken;
 
   if (!incomingRefreshToken) {
@@ -53,12 +53,12 @@ export const refreshToken = asyncWrapper(async (req: Request, res: Response, nex
       message: 'Token refrescado',
       accessToken
     });
-  } catch (error) {
+  } catch (_error) {
     throw new UnauthorizedError('Refresh token expirado o inválido');
   }
 });
 
-export const logout = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const logout = asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
   res.clearCookie(config.cookies.refreshName, {
     ...config.cookies.options
   });

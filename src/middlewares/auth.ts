@@ -27,7 +27,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     const decoded = verifyAccessToken(token);
     req.user = decoded;
     next();
-  } catch (err: any) {
+  } catch (err: unknown) {
     if (err instanceof jwt.TokenExpiredError) {
       return next(new UnauthorizedError('Access token expirado'));
     }
@@ -88,7 +88,7 @@ export const authorizeOfertaOwnerOrAdmin = async (req: AuthRequest, res: Respons
     }
 
     next();
-  } catch (error) {
+  } catch (_error) {
     return next(new InternalServerError('Internal Server Error'));
   }
 };
@@ -113,7 +113,7 @@ export const authorizeSolicitudOwnerOrAdmin = async (req: AuthRequest, res: Resp
     }
 
     next();
-  } catch (error) {
+  } catch (_error) {
     return next(new InternalServerError('Internal Server Error'));
   }
 };
@@ -141,7 +141,7 @@ export const authorizeSolicitudParticipantOrAdmin = async (req: AuthRequest, res
     }
 
     next();
-  } catch (error) {
+  } catch (_error) {
     return next(new InternalServerError('Internal Server Error'));
   }
 };

@@ -11,7 +11,7 @@ export interface ApiErrorResponse {
   timestamp: string;
 }
 
-export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction): void => {
+export const globalErrorHandler = (err: any, _req: Request, res: Response, _next: NextFunction): void => {
   let errorToHandle = err;
 
   // Interceptar errores específicos de Mongoose / MongoDB
