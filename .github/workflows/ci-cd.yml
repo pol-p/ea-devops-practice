@@ -8,7 +8,7 @@ on:
 
 jobs:
   # ---------------------------------------------------------
-  # JOB 1: CALIDAD DE CÓDIGO (Rápido y barato)
+  # JOB 1: CALIDAD DE CÓDIGO
   # ---------------------------------------------------------
   quality-check:
     runs-on: ubuntu-latest
@@ -76,7 +76,6 @@ jobs:
         with:
           context: .
           push: true
-          # Usamos el Dockerfile multi-stage que vimos al principio
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/backend-relevo:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/backend-relevo:${{ github.sha }}

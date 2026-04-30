@@ -15,7 +15,7 @@ export const validateUsuarioUpdateBody = (req: Request, res: Response, next: Nex
     next();
   } catch (error) {
     if (error instanceof ZodError) {
-      const details = error.issues.map((err) => ({ field: err.path.join('.'), message: err.message }));
+      const details = error.issues.map((err: any) => ({ field: err.path.join('.'), message: err.message }));
       next(new ValidationError('Validation failed', details));
       return;
     }
