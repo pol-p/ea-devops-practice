@@ -8,10 +8,31 @@ on:
 
 jobs:
   # ---------------------------------------------------------
-  # JOB 1: INTEGRACIÓN CONTINUA (CI)
-  # Se ejecuta en cada push y PR para asegurar la calidad.
+  # JOB 1: CALIDAD DE CÓDIGO (Rápido y barato)
   # ---------------------------------------------------------
-  test-and-lint:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: 'npm'
+      - run: npm ci
+      - name: Formato y Lint
+        run: |
+          npm run format:check
+          npm run lint
+      - name: Tipos y Build
+        run: |
+          npm run check
+          npm run build
+
+  # ---------------------------------------------------------
+  # JOB 2: TESTS (Solo si la calidad es buena)
+  # ---------------------------------------------------------
+  unit-and-integration-tests:
+    needs: quality-check
     runs-on: ubuntu-latest
     services:
       mongodb:
@@ -19,42 +40,22 @@ jobs:
         ports:
           - 27017:27017
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js 24.x
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 24.x
           cache: 'npm'
-
-      - name: Instalar dependencias
-        run: npm ci
-
-      - name: Verificar formato (Prettier)
-        run: npm run format:check
-
-      - name: Analizar código (ESLint)
-        run: npm run lint
-
-      - name: Verificar tipos (TypeScript)
-        run: npm run check
-
-      - name: Compilar proyecto
-        run: npm run build
-
+      - run: npm ci
       - name: Ejecutar Tests
         env:
           MONGO_URI: mongodb://localhost:27017/test_db
         run: npm test
 
   # ---------------------------------------------------------
-  # JOB 2: DESPLIEGUE CONTINUO (CD)
-  # Solo se ejecuta si el Job de CI pasa correctamente
-  # Y si estamos en la rama de 'produccion'.
+  # JOB 3: DESPLIEGUE (Solo en 'produccion' y si los tests pasan)
   # ---------------------------------------------------------
   build-and-push:
-    needs: test-and-lint
+    needs: unit-and-integration-tests
     if: github.event_name == 'push' && github.ref == 'refs/heads/produccion'
     runs-on: ubuntu-latest
     steps:
@@ -75,6 +76,7 @@ jobs:
         with:
           context: .
           push: true
+          # Usamos el Dockerfile multi-stage que vimos al principio
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/backend-relevo:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/backend-relevo:${{ github.sha }}
